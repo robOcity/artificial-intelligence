@@ -1,14 +1,19 @@
-
 from utils import *
 
 
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
-square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
+square_units = [
+    cross(rs, cs)
+    for rs in ("ABC", "DEF", "GHI")
+    for cs in ("123", "456", "789")
+]
 unitlist = row_units + column_units + square_units
 
-# TODO: Update the unit list to add the new diagonal units
-unitlist = unitlist
+diag_units = [boxes[i] for i in range(0, 82, 10)] + [
+    boxes[i] for i in range(8, 80, 8)
+]
+unitlist = unitlist + diag_units
 
 
 # Must be called after all units (including diagonals) are added to the unitlist
@@ -113,7 +118,7 @@ def reduce_puzzle(values):
     -------
     dict or False
         The values dictionary after continued application of the constraint strategies
-        no longer produces any changes, or False if the puzzle is unsolvable 
+        no longer produces any changes, or False if the puzzle is unsolvable
     """
     # TODO: Copy your code from the classroom and modify it to complete this function
     raise NotImplementedError
@@ -149,7 +154,7 @@ def solve(grid):
     ----------
     grid(string)
         a string representing a sudoku grid.
-        
+
         Ex. '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
 
     Returns
@@ -163,16 +168,19 @@ def solve(grid):
 
 
 if __name__ == "__main__":
-    diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+    diag_sudoku_grid = "2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3"
     display(grid2values(diag_sudoku_grid))
     result = solve(diag_sudoku_grid)
     display(result)
 
     try:
         import PySudoku
+
         PySudoku.play(grid2values(diag_sudoku_grid), result, history)
 
     except SystemExit:
         pass
     except:
-        print('We could not visualize your board due to a pygame issue. Not a problem! It is not a requirement.')
+        print(
+            "We could not visualize your board due to a pygame issue. Not a problem! It is not a requirement."
+        )
