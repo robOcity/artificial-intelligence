@@ -8,12 +8,9 @@ square_units = [
     for rs in ("ABC", "DEF", "GHI")
     for cs in ("123", "456", "789")
 ]
-unitlist = row_units + column_units + square_units
-
-diag_units = [boxes[i] for i in range(0, 82, 10)] + [
-    boxes[i] for i in range(8, 80, 8)
-]
-unitlist = unitlist + diag_units
+diag_1 = [[boxes[i] for i in range(0, 82, 10)]]
+diag_2 = [[boxes[i] for i in range(8, 80, 8)]]
+unitlist = row_units + column_units + square_units + diag_1 + diag_2
 
 
 # Must be called after all units (including diagonals) are added to the unitlist
@@ -58,8 +55,26 @@ def naked_twins(values):
     Pseudocode for this algorithm on github:
     https://github.com/udacity/artificial-intelligence/blob/master/Projects/1_Sudoku/pseudocode.md
     """
-    # TODO: Implement this function!
-    raise NotImplementedError
+    from copy import deepcopy
+    reduced = deepcopy(values)
+
+    print("")
+    display(values)
+
+    has_two_vals = [box for box, value in values.items() if len(value) == 2]
+
+    twins = [(box_1, box_2) for box_1 in has_two_vals
+             for box_2 in has_two_vals
+             if set(values[box_1]) == set(values[box_2])]
+
+    for box_1, box_2 in twins:
+        for peer in set(peers[box_1]).intersection(peers[box_2]):
+            for digit in values[box_1]:
+                if len(reduced[peer]) > 1:
+                    reduced[peer] = reduced[peer].replace(digit, "")
+
+    display(reduced)
+    return reduced
 
 
 def eliminate(values):
@@ -86,12 +101,13 @@ def eliminate(values):
     for one_box, one_value in singletons:
 
         # create the set of boxes for domain reduction
-        box_set = set.union(*[set(box) for box in units[one_box]])
+        box_set = set.union(*[set(peers) for peers in units[one_box]])
         box_set.discard(one_box)
+        if any([len(box) == 1 for box in box_set]):
+            print(box_set)
 
         # reduce the domain expressed as a string
         for box in box_set:
-            before = values[box]
             values[box] = values[box].replace(one_value, "")
 
     return values
@@ -149,6 +165,7 @@ def reduce_puzzle(values):
         )
         values = eliminate(values)
         values = only_choice(values)
+        values = naked_twins(values)
         solved_values_after = len(
             [box for box in values.keys() if len(values[box]) == 1]
         )
