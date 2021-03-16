@@ -60,19 +60,23 @@ def naked_twins(values):
 
     two_values = [box for box, value in values.items() if len(value) == 2]
 
-    naked_twins = [(box_1, box_2) for box_1 in two_values
-                   for box_2 in two_values
-                   if set(values[box_1]) == set(values[box_2])]
+    naked_twins = [tuple((box1, box2)) for box1 in two_values
+                   for box2 in two_values
+                   if set(values[box1]) == set(values[box2]) and
+                   box1 != box2]
 
     for box1, box2 in naked_twins:
         for peer in set(peers[box1]).intersection(peers[box2]):
             for digit in values[box1]:
-                if len(reduced[peer]) > 1:
+                # efficiently shrink the set of domain values
+                if len(reduced[peer]) > 1 and digit in reduced[peer]:
+                    # TODO Clean up debug code
+                    before = reduced[peer]
                     reduced[peer] = reduced[peer].replace(digit, "")
-
-    display(values)
+                    print(box1, box2, 'peer:', peer, 'digit:', digit, 'before:',
+                          before, 'after:', reduced[peer])
     display(reduced)
-
+    print("peers['A1']:", peers['A1'])
     return reduced
 
 

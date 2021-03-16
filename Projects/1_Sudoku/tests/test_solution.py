@@ -6,6 +6,28 @@ own additional test cases to cover any failed tests shown in the Project Assista
 import unittest
 import solution
 
+#  TODO clean up
+rows = 'ABCDEFGHI'
+cols = '123456789'
+boxes = [r + c for r in rows for c in cols]
+
+
+def display(values):
+    """Display the values as a 2-D grid.
+
+    Parameters
+    ----------
+        values(dict): The sudoku in dictionary form
+    """
+    width = 1+max(len(values[s]) for s in boxes)
+    line = '+'.join(['-'*(width*3)]*3)
+    for r in rows:
+        print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
+                      for c in cols))
+        if r in 'CF':
+            print(line)
+    print()
+
 
 class TestNakedTwins(unittest.TestCase):
     before_naked_twins_1 = {'I6': '4', 'H9': '3', 'I2': '6', 'E8': '1', 'H3': '5', 'H7': '8', 'I7': '1', 'I4': '8',
@@ -38,7 +60,7 @@ class TestNakedTwins(unittest.TestCase):
          'F5': '8', 'E2': '3', 'F7': '35', 'F8': '9', 'D2': '1', 'H1': '4', 'H6': '17', 'H2': '9', 'H4': '17',
          'D3': '79', 'B4': '27', 'B5': '1', 'B6': '8', 'B7': '27', 'E9': '2', 'B1': '9', 'B2': '5', 'B3': '6',
          'D6': '279', 'D7': '34', 'D4': '237', 'D5': '347', 'B8': '3', 'B9': '4', 'D1': '5'}
-        ]
+    ]
 
     before_naked_twins_2 = {'A1': '23', 'A2': '4', 'A3': '7', 'A4': '6', 'A5': '8', 'A6': '5', 'A7': '23', 'A8': '9',
                             'A9': '1', 'B1': '6', 'B2': '9', 'B3': '8', 'B4': '4', 'B5': '37', 'B6': '1', 'B7': '237',
@@ -73,13 +95,22 @@ class TestNakedTwins(unittest.TestCase):
     ]
 
     def test_naked_twins(self):
+        print('Initial Board')
+        display(self.before_naked_twins_1)
+        for soln in self.possible_solutions_1:
+            print('An Expected Solution')
+            display(soln)
         self.assertTrue(solution.naked_twins(self.before_naked_twins_1) in self.possible_solutions_1,
                         "Your naked_twins function produced an unexpected board.")
 
     def test_naked_twins2(self):
+        print('Initial Board')
+        display(self.before_naked_twins_2)
+        for soln in self.possible_solutions_2:
+            print('An Expected Solution')
+            display(soln)
         self.assertTrue(solution.naked_twins(self.before_naked_twins_2) in self.possible_solutions_2,
                         "Your naked_twins function produced an unexpected board.")
-
 
 
 class TestDiagonalSudoku(unittest.TestCase):
@@ -97,7 +128,9 @@ class TestDiagonalSudoku(unittest.TestCase):
                           'D1': '5'}
 
     def test_solve(self):
-        self.assertEqual(solution.solve(self.diagonal_grid), self.solved_diag_sudoku)
+        self.assertEqual(solution.solve(self.diagonal_grid),
+                         self.solved_diag_sudoku)
+
 
 if __name__ == '__main__':
     unittest.main()
