@@ -8,8 +8,8 @@ square_units = [
     for rs in ("ABC", "DEF", "GHI")
     for cs in ("123", "456", "789")
 ]
-diag_1 = [[boxes[i] for i in range(0, 82, 10)]]
-diag_2 = [[boxes[i] for i in range(8, 80, 8)]]
+diag_1 = [[row + col for row, col in zip(rows, cols)]]
+diag_2 = [[row + col for row, col in zip(rows, cols[::-1])]]
 unitlist = row_units + column_units + square_units + diag_1 + diag_2
 
 
@@ -58,22 +58,21 @@ def naked_twins(values):
     from copy import deepcopy
     reduced = deepcopy(values)
 
-    print("")
-    display(values)
+    two_values = [box for box, value in values.items() if len(value) == 2]
 
-    has_two_vals = [box for box, value in values.items() if len(value) == 2]
+    naked_twins = [(box_1, box_2) for box_1 in two_values
+                   for box_2 in two_values
+                   if set(values[box_1]) == set(values[box_2])]
 
-    twins = [(box_1, box_2) for box_1 in has_two_vals
-             for box_2 in has_two_vals
-             if set(values[box_1]) == set(values[box_2])]
-
-    for box_1, box_2 in twins:
-        for peer in set(peers[box_1]).intersection(peers[box_2]):
-            for digit in values[box_1]:
+    for box1, box2 in naked_twins:
+        for peer in set(peers[box1]).intersection(peers[box2]):
+            for digit in values[box1]:
                 if len(reduced[peer]) > 1:
                     reduced[peer] = reduced[peer].replace(digit, "")
 
+    display(values)
     display(reduced)
+
     return reduced
 
 
