@@ -54,29 +54,16 @@ def naked_twins(values):
     --------
     Pseudocode for this algorithm on github:
     https://github.com/udacity/artificial-intelligence/blob/master/Projects/1_Sudoku/pseudocode.md
+
     """
-    from copy import deepcopy
-    reduced = deepcopy(values)
+    reduced = values.copy()
+    for box1 in values:
+        for box2 in peers[box1]:
+            if len(values[box1]) == 2 and set(values[box1]) == set(values[box2]):
+                for peer in set(peers[box1]).intersection(set(peers[box2])):
+                    for digit in values[box1]:
+                        reduced[peer] = reduced[peer].replace(digit, '')
 
-    two_values = [box for box, value in values.items() if len(value) == 2]
-
-    naked_twins = [tuple((box1, box2)) for box1 in two_values
-                   for box2 in two_values
-                   if set(values[box1]) == set(values[box2]) and
-                   box1 != box2]
-
-    for box1, box2 in naked_twins:
-        for peer in set(peers[box1]).intersection(peers[box2]):
-            for digit in values[box1]:
-                # efficiently shrink the set of domain values
-                if len(reduced[peer]) > 1 and digit in reduced[peer]:
-                    # TODO Clean up debug code
-                    before = reduced[peer]
-                    reduced[peer] = reduced[peer].replace(digit, "")
-                    print(box1, box2, 'peer:', peer, 'digit:', digit, 'before:',
-                          before, 'after:', reduced[peer])
-    display(reduced)
-    print("peers['A1']:", peers['A1'])
     return reduced
 
 

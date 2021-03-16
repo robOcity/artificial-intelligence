@@ -6,28 +6,6 @@ own additional test cases to cover any failed tests shown in the Project Assista
 import unittest
 import solution
 
-#  TODO clean up
-rows = 'ABCDEFGHI'
-cols = '123456789'
-boxes = [r + c for r in rows for c in cols]
-
-
-def display(values):
-    """Display the values as a 2-D grid.
-
-    Parameters
-    ----------
-        values(dict): The sudoku in dictionary form
-    """
-    width = 1+max(len(values[s]) for s in boxes)
-    line = '+'.join(['-'*(width*3)]*3)
-    for r in rows:
-        print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
-                      for c in cols))
-        if r in 'CF':
-            print(line)
-    print()
-
 
 class TestNakedTwins(unittest.TestCase):
     before_naked_twins_1 = {'I6': '4', 'H9': '3', 'I2': '6', 'E8': '1', 'H3': '5', 'H7': '8', 'I7': '1', 'I4': '8',
@@ -95,20 +73,10 @@ class TestNakedTwins(unittest.TestCase):
     ]
 
     def test_naked_twins(self):
-        print('Initial Board')
-        display(self.before_naked_twins_1)
-        for soln in self.possible_solutions_1:
-            print('An Expected Solution')
-            display(soln)
         self.assertTrue(solution.naked_twins(self.before_naked_twins_1) in self.possible_solutions_1,
                         "Your naked_twins function produced an unexpected board.")
 
     def test_naked_twins2(self):
-        print('Initial Board')
-        display(self.before_naked_twins_2)
-        for soln in self.possible_solutions_2:
-            print('An Expected Solution')
-            display(soln)
         self.assertTrue(solution.naked_twins(self.before_naked_twins_2) in self.possible_solutions_2,
                         "Your naked_twins function produced an unexpected board.")
 
