@@ -33,17 +33,8 @@ class ActionLayer(BaseActionLayer):
         layers.ActionNode
         """
         return any(
-            [
-                self.is_mutex(~effect, precond)
-                for effect in actionA.effects
-                for precond in actionB.preconditions
-            ]
-            + [
-                self.is_mutex(~effect, precond)
-                for effect in actionB.effects
-                for precond in actionA.preconditions
-            ]
-        )
+            [~e in actionA.preconditions for e in actionB.effects]
+        ) | any([~e in actionB.preconditions for e in actionA.effects])
 
     def _competing_needs(self, actionA, actionB):
         """ Return True if any preconditions of the two actions are pairwise mutex in the parent layer
