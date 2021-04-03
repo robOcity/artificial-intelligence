@@ -86,7 +86,7 @@ class LiteralLayer(BaseLiteralLayer):
     def _negation(self, literalA, literalB):
         """ Return True if two literals are negations of each other """
 
-        return self.is_mutex(literalA, literalB)
+        return ~literalA == literalB
 
 
 class PlanningGraph:
