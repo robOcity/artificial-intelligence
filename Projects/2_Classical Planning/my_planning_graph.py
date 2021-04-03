@@ -192,21 +192,24 @@ class PlanningGraph:
         -----
         WARNING: you should expect long runtimes using this heuristic with A*
         """
-        layers_to_goal = {}
+
+        def find_goal(goal):
+            for layer in self.literal_layers:
+                if goal in layer:
+                    return True
+            return False
+
+        i = 0
         while not self._is_leveled:
-
-            # search for goals
-            for i, goal in enumerate(self.goal):
-                if goal in self.layers and goal not in layers_to_goal:
-                    layers_to_goal[goal] = i
-
-            # test that all goals have been achieved
-            if all([goal in layers_to_goal for goal in self.goal]):
-                return max(layers_to_goal.values())
-
-            # add a layer to the planning graph
-            self._extend()
-
+            all_goals_met = True
+            for goal in self.goal:
+                if not find_goal(goal):
+                    all_goals_met = False
+            if all_goals_met:
+                return i
+            else:
+                i += 1
+                self._extend()
         return None
 
     def h_setlevel(self):
