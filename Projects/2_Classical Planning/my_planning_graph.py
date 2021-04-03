@@ -71,10 +71,9 @@ class LiteralLayer(BaseLiteralLayer):
         """
         return all(
             [
-                self.is_mutex(act1, act2)
-                for act1, act2 in zip(
-                    self.parents[literalA], self.parents[literalB]
-                )
+                self.parent_layer.is_mutex(act1, act2)
+                for act1 in self.parents[literalA]
+                for act2 in self.parents[literalB]
             ]
         )
 
