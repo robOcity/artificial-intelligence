@@ -50,14 +50,9 @@ class ActionLayer(BaseActionLayer):
         """
         return any(
             [
-                ~self.is_mutex(precond1, precond2)
-                for precond1 in actionA.preconditions
-                for precond2 in actionB.preconditions
-            ]
-            + [
-                ~self.is_mutex(precond1, precond2)
-                for precond1 in actionB.preconditions
-                for precond2 in actionA.preconditions
+                self.parent_layer.is_mutex(precond_a, precond_b)
+                for precond_a in actionA.preconditions
+                for precond_b in actionB.preconditions
             ]
         )
 
