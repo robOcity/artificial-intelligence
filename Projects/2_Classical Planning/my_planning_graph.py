@@ -17,11 +17,9 @@ class ActionLayer(BaseActionLayer):
         --------
         layers.ActionNode
         """
-        effects = actionA.effects & actionB.effects
-        combos = combinations(effects, 2)
-        mutex = [self.is_mutex(a, b) for a, b in combos]
-        is_mutex = any(mutex)
-        return is_mutex
+        return any([~e in actionB.effects for e in actionA.effects]) | any(
+            [~e in actionA.effects for e in actionB.effects]
+        )
 
     def _interference(self, actionA, actionB):
         """ Return True if the effects of either action negate the preconditions of the other 
