@@ -123,6 +123,21 @@ class PlanningGraph:
         self.literal_layers = [layer]
         self.action_layers = []
 
+    def find_goal(self, goal):
+        """Returns True if a goal is found in literal layers of the planning graph.
+
+        Parameters
+        ----------
+        goal : PlanningProblem.goal
+            A goal state resulting from the effect of an action, or persistent 
+            action (no-op).
+        """
+        levels = {}
+        for layer in self.literal_layers:
+            if goal in layer:
+                return True
+        return False
+
     def h_levelsum(self):
         """ Calculate the level sum heuristic for the planning graph
 
@@ -148,21 +163,23 @@ class PlanningGraph:
         --------
         Russell-Norvig 10.3.1 (3rd Edition)
         """
-        layers_to_goal = {}
+
+        def level_cost(goal):
+            levels = []
+            for cost, layer in enumerate(self.literal_layers):
+                if goal in layer:
+                    return cost
+            return 0
+
         while not self._is_leveled:
-
-            # search for goals
-            for i, goal in enumerate(self.goal):
-                if goal in self.layers and goal not in layers_to_goal:
-                    layers_to_goal[goal] = i
-
-            # test that all goals have been achieved
-            if all([goal in layers_to_goal for goal in self.goal]):
-                return sum(layers_to_goal.values())
-
-            # add a layer to the planning graph
-            self._extend()
-
+            all_goals_met = True
+            for goal in self.goal:
+                if not self.find_goal(goal):
+                    all_goals_met = False
+            if all_goals_met:
+                return sum([level_cost(goal) for goal in self.goal])
+            else:
+                self._extend()
         return None
 
     def h_maxlevel(self):
@@ -192,18 +209,11 @@ class PlanningGraph:
         -----
         WARNING: you should expect long runtimes using this heuristic with A*
         """
-
-        def find_goal(goal):
-            for layer in self.literal_layers:
-                if goal in layer:
-                    return True
-            return False
-
         i = 0
         while not self._is_leveled:
             all_goals_met = True
             for goal in self.goal:
-                if not find_goal(goal):
+                if not self.find_goal(goal):
                     all_goals_met = False
             if all_goals_met:
                 return i
@@ -253,7 +263,7 @@ class PlanningGraph:
                 goals_met = all(
                     [
                         layer.is_mutex(goal_a, goal_b)
-                        for goal_a, goal_b in combinations(self.goals, 2)
+                        for goal_a, goal_b in combinations(self.goal, 2)
                     ]
                 )
                 goals_are_mutex.append(goals_met)
