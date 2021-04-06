@@ -245,32 +245,27 @@ class PlanningGraph:
         WARNING: you should expect long runtimes using this heuristic on complex problems
         """
 
-        self._extend()
+        num_layers, prev_layer = 0, self.literal_layers[-1]
+
         while not self._is_leveled:
 
-            if not all(
-                [
-                    goal not in layer
-                    for goal in self.goal
-                    for layer in self.literal_layers
-                ]
-            ):
-                self._extend()
-                continue
+            goals_met = set(self.goal).issubset(prev_layer)
+            goals_compatible = False
 
-            goals_are_mutex = []
-            for layer in self.literal_layers:
-                goals_met = all(
+            if goals_met:
+                goals_compatible = not all(
                     [
-                        layer.is_mutex(goal_a, goal_b)
+                        prev_layer.is_mutex(goal_a, goal_b)
                         for goal_a, goal_b in combinations(self.goal, 2)
                     ]
                 )
-                goals_are_mutex.append(goals_met)
+            if goals_met and goals_compatible:
+                return num_layers - 1
+            else:
+                self._extend()
+                num_layers += 1
 
-            return not all(goals_are_mutex)
-
-        return None
+        return num_layers - 1 if num_layers > 0 else -1
 
     ##############################################################################
     #                     DO NOT MODIFY CODE BELOW THIS LINE                     #
@@ -286,9 +281,6 @@ class PlanningGraph:
             The maximum number of levels to extend before breaking the loop. (Starting with
             a negative value will never interrupt the loop.)
 
-        Notes
-        -----
-        YOU SHOULD NOT THIS FUNCTION TO COMPLETE THE PROJECT, BUT IT MAY BE USEFUL FOR TESTING
         """
         while not self._is_leveled:
             if maxlevels == 0:
