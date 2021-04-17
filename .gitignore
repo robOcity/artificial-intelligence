@@ -120,4 +120,3 @@ settings.json
 
 # temp files
 plots/
-*.ipynb
