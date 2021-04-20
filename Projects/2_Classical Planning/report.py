@@ -176,7 +176,9 @@ create_catplot(df, "New_Nodes", "New Nodes by Problem")
 
 
 # %%
-df[["Problem", "Alg_Title", "New_Nodes", "Actions"]].set_index("Problem")
+df[["Problem", "Alg_Title", "New_Nodes", "Actions"]].set_index(
+    "Problem"
+).sort_values(by=["Problem", "New_Nodes"])
 
 # %% [markdown]
 # ### Discussion
@@ -199,7 +201,9 @@ create_catplot(df, "Time", "Runtime vs Actions")
 
 
 # %%
-df[["Problem", "Alg_Title", "Time", "Actions"]].set_index("Problem")
+df[["Problem", "Alg_Title", "Time", "Actions"]].set_index(
+    "Problem"
+).sort_values(by=["Problem", "Time"])
 
 
 # %%
@@ -227,7 +231,9 @@ create_catplot(df, "Actions", "Actions by Algorithm", is_log=False)
 
 
 # %%
-df[["Problem", "Alg_Title", "Actions"]].set_index("Problem")
+df[["Problem", "Alg_Title", "Actions"]].set_index("Problem").sort_values(
+    by=["Problem", "Actions"]
+)
 
 # %% [markdown]
 # ### Discussion
@@ -241,6 +247,33 @@ df[["Problem", "Alg_Title", "Actions"]].set_index("Problem")
 # 1. _Competing needs_ occur when the preconditions of one action interfere with the preconditions of the other.  One plane can only fly to one airport, so the actions `Fly(p, a, b)` and `Fly(P, a, c)` compete for the having the plane `At(a)`.
 #
 # By eliminating mutex actions, the size of the resulting plan shrinks dramatically.
+# %% [markdown]
+# # Questions
+#
+# 1. Which algorithm or algorithms would be most appropriate for planning in a very restricted domain (i.e., one that has only a few actions) and needs to operate in real time?
+#
+# > Based on my analysis of time vs. actions, I would select Greedy h_unmet_goals or DFS because they performed the best for small problems (i.e., problem 1). Both completed their search in less than one-hundredth of a second, an order of magnitude faster than A* h_unmet_goals.
+#
+# 1. _Which algorithm or algorithms would be most appropriate for planning in very large domains (e.g., planning delivery routes for all UPS drivers in the U.S. on a given day)_
+#
+# > Greedy h_unmet_goals is by far the best choice for large problem domains (i.e., problem 4). Other choices are Greedy h_pg_maxlevel or A* h_unmet_goals, but they are three orders of magnitude slower.
+#
+#
+# 1. _Which algorithm or algorithms would be most appropriate for planning problems where it is important to find only optimal plans?
+#
+# > A planning graph is a tree with its root at the initial state. Actions are the branches of the tree and whose effects result in a new state. A* is guaranteed to return an optimal plan when searching a tree using an admissible heuristic. Heuristics are estimates of the cost measured in the number of new states from the initial state. An admissible heuristic will always be less than or equal to the actual cost. Of the heuristics considered in this analysis, here are those that are admissible:
+#
+# * The h_pg_maxlevel. heuristic is the largest level-cost needed to achieve any one of the goal's conditions.
+#
+# * The h_pg_setlevel heuristic is the level where all the goal's conditions are achieved.
+#
+# > __So, to find optimal plans use either A*_h_pg_setlevel heuristic or A*_h_pg_maxlevel. In my results, A_h_pg_setlevel is about 10 faster than A_h_pg_maxlevel for all problems analyzed in this exercise. So, choose A*_h_pg_setlevel. It will return an optimal plan in the least amount of time.__
+#
+# BFS, too, will return an optimal plan but expands an exponentially expanding number of nodes in the process, so it consumes a lot of memory and time.__
+#
+# ### Cite
+#
+# Russell, S. J., & Norvig, P. (2010). Artificial intelligence: A modern approach (3rd ed.). Upper Saddle River: Prentice-Hall.  Chapter 3 - Solving Problems by Searching and Chapter 10 - Classical Planning.
 
 # %%
 
