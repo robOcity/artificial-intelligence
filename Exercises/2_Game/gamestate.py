@@ -59,9 +59,9 @@ class GameState:
         """
         assert action in self.actions(), "Attempting illegal action"
         new_game = deepcopy(self)
-        self._board[action[0]][action[1]] = 1
-        self._player_locations[self._parity] = action
-        self._parity ^= 1  # xor to toggle between players
+        new_game._board[action[0]][action[1]] = 1
+        new_game._player_locations[self._parity] = action
+        new_game._parity ^= 1  # xor to toggle between players
         return new_game
 
     def terminal_test(self):
@@ -72,15 +72,13 @@ class GameState:
         player has no remaining liberties (even if the
         player is not active in the current state)
         """
-        return (
-            any(
-                [
-                    len(self.liberties(self._player_locations[player])) == 0
-                    for player in [0, 1]
-                ]
-            )
-            == 0
-        )
+        p0 = self._has_liberties(self._parity)
+        p1 = self._has_liberties(1 - self._parity)
+        result = not any((p0, p1))
+        return result
+
+    def _has_liberties(self, player_id):
+        return any(self.liberties(self._player_locations[player_id]))
 
     def liberties(self, loc):
         """Return a list of all open cells in the
@@ -94,20 +92,17 @@ class GameState:
         on the board
         """
         if not loc:
-            return self._get_blank_space()
+            return self._get_blank_spaces()
         moves = []
         _x, _y = loc
-        for ray in RAYS:
-            dx, dy = ray
-            while 0 < _x + dx <= xlim and 0 < _y + dy <= ylim:
-                if self._board[_x + dx][_y + dy] == 0:
-                    moves.append((dx, dy))
+        for dx, dy in RAYS:
+            while 0 <= _x + dx < xlim and 0 <= _y + dy < ylim:
+                _x, _y = _x + dx, _y + dy
+                if self._board[_x][_y]:
+                    break
+                moves.append((_x, _y))
         return moves
 
-    def _get_blank_space(self):
-        return [
-            (x, y)
-            for x in range(xlim)
-            for y in range(ylim)
-            if self._board[x][y] == 0
-        ]
+    def _get_blank_spaces(self):
+        return [(x, y) for y in range(ylim) for x in range(xlim)
+                if self._board[x][y] == 0]
