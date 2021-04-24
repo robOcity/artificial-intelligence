@@ -1,3 +1,11 @@
+def my_moves(gameState):
+    """
+    Returns the number of moves available to a player.  
+    Use as a heuristic for depth-limited search.
+    """
+    return len(gameState.liberties(gameState._player_locations[player_id]))
+
+
 def minimax_decision(gameState, depth):
     """ Return the move along a branch of the game tree that
     has the best possible value.  A move is a pair of coordinates
@@ -26,7 +34,7 @@ def min_value(gameState, depth):
         return gameState.utility(0)
 
     if depth == 0:
-        return 0
+        return my_moves(gameState)
 
     v = float("inf")
     for a in gameState.actions():
@@ -43,7 +51,7 @@ def max_value(gameState, depth):
         return gameState.utility(0)
 
     if depth == 0:
-        return 0
+        return my_moves(gameState)
 
     v = float("-inf")
     for a in gameState.actions():
