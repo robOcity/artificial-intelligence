@@ -3,7 +3,9 @@ def my_moves(gameState):
     Returns the number of moves available to a player.  
     Use as a heuristic for depth-limited search.
     """
-    return len(gameState.liberties(gameState._player_locations[player_id]))
+    return len(
+        gameState.liberties(gameState._player_locations[gameState._parity])
+    )
 
 
 def minimax_decision(gameState, depth):
